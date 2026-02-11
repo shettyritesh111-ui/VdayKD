@@ -59,6 +59,7 @@ button {
   cursor: pointer;
   margin: 10px;
   transition: 0.3s ease;
+  position: absolute;
 }
 
 .primary {
@@ -72,13 +73,13 @@ button {
 .secondary {
   background: #333;
   color: white;
-  position: absolute;
 }
 
 img {
   width: 260px;
   border-radius: 20px;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .confetti {
@@ -208,18 +209,22 @@ function startQuestion() {
   music.play().catch(() => {});
 }
 
-let noScale = 1;
-let yesScale = 1;
-
+// Jump No button around GIF + Yes button only
 function moveNoButton() {
-  const maxX = window.innerWidth - noBtn.offsetWidth;
-  const maxY = window.innerHeight - noBtn.offsetHeight;
-  noBtn.style.left = Math.random() * maxX + "px";
-  noBtn.style.top = Math.random() * maxY + "px";
-  noScale -= 0.1;
-  if (noScale > 0.3) noBtn.style.transform = `scale(${noScale})`;
-  yesScale += 0.05;
-  yesBtn.style.transform = `scale(${yesScale})`;
+  const gifRect = gif.getBoundingClientRect();
+  const yesRect = yesBtn.getBoundingClientRect();
+  const padding = 50; // jump area around GIF/Yes
+
+  const minX = Math.min(gifRect.left, yesRect.left) - padding;
+  const maxX = Math.max(gifRect.right, yesRect.right) + padding - noBtn.offsetWidth;
+  const minY = gifRect.top - padding;
+  const maxY = yesRect.bottom + padding - noBtn.offsetHeight;
+
+  const randomX = Math.max(minX, Math.random() * (maxX - minX));
+  const randomY = Math.max(minY, Math.random() * (maxY - minY));
+
+  noBtn.style.left = randomX + "px";
+  noBtn.style.top = randomY + "px";
 }
 
 noBtn.addEventListener("mouseover", moveNoButton);
@@ -256,7 +261,7 @@ function launchConfetti() {
   }
 }
 
-// Ensure music starts on load even if autoplay is blocked
+// Autoplay fallback
 window.addEventListener("load", () => {
   music.play().catch(() => {
     const userInteraction = () => {
