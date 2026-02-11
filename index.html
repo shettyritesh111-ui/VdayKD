@@ -67,6 +67,7 @@ button {
 
 #noBtn {
   position: absolute; /* Only No button moves */
+  transition: left 0.4s ease, top 0.4s ease; /* smooth movement */
 }
 
 .primary {
@@ -180,7 +181,7 @@ img {
   <button id="yesBtn" class="primary">❤️ Yes</button>
   <button id="noBtn" class="secondary">No</button>
   <div id="screenshotText" class="screenshot-text">
-    Screenshot this moment ❤️
+    Screenshot this moment for you and your one and only RK❤️
   </div>
 </div>
 
@@ -198,8 +199,9 @@ const screenshotText = document.getElementById("screenshotText");
 
 // Save original No button position
 let originalNoPos = { left: 0, top: 0 };
+let noBtnIndex = 0;
 
-question.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   originalNoPos = { left: noBtn.offsetLeft, top: noBtn.offsetTop };
 });
 
@@ -223,7 +225,6 @@ const interval = setInterval(() => {
       loading.classList.add("hidden");
       intro.classList.remove("hidden");
       music.play().catch(() => {});
-      // Save No button original position after layout
       originalNoPos = { left: noBtn.offsetLeft, top: noBtn.offsetTop };
     }, 800);
   }
@@ -240,27 +241,23 @@ function startQuestion() {
   music.play().catch(() => {});
 }
 
-// No button moves only between three positions
+// Smooth No button cycling
 function moveNoButton() {
   const gifRect = gif.getBoundingClientRect();
   const yesRect = yesBtn.getBoundingClientRect();
 
   const positions = [
-    {
-      left: gifRect.left + gifRect.width/2 - noBtn.offsetWidth/2,
-      top: gifRect.top + gifRect.height/2 - noBtn.offsetHeight/2
-    },
-    {
-      left: yesRect.left + yesRect.width/2 - noBtn.offsetWidth/2,
-      top: yesRect.top + yesRect.height/2 - noBtn.offsetHeight/2
-    },
-    {
-      left: originalNoPos.left,
-      top: originalNoPos.top
-    }
+    { left: gifRect.left + gifRect.width/2 - noBtn.offsetWidth/2,
+      top: gifRect.top + gifRect.height/2 - noBtn.offsetHeight/2 },
+    { left: yesRect.left + yesRect.width/2 - noBtn.offsetWidth/2,
+      top: yesRect.top + yesRect.height/2 - noBtn.offsetHeight/2 },
+    { left: originalNoPos.left, top: originalNoPos.top }
   ];
 
-  const pos = positions[Math.floor(Math.random() * positions.length)];
+  // Cycle to next position
+  noBtnIndex = (noBtnIndex + 1) % positions.length;
+  const pos = positions[noBtnIndex];
+
   noBtn.style.left = pos.left + "px";
   noBtn.style.top = pos.top + "px";
 }
