@@ -116,6 +116,21 @@ img {
   opacity: 0;
   transition: opacity 2s ease;
 }
+
+/* Falling heart emoji */
+.falling-heart {
+  position: fixed;
+  font-size: 18px;
+  color: white;
+  top: -30px;
+  z-index: 0;
+  pointer-events: none;
+  animation: fallHeart linear forwards;
+}
+
+@keyframes fallHeart {
+  to { transform: translateY(110vh); }
+}
 </style>
 </head>
 
@@ -158,7 +173,7 @@ img {
   <button id="yesBtn" class="primary">❤️ Yes</button>
   <button id="noBtn" class="secondary">No</button>
   <div id="screenshotText" class="screenshot-text">
-    Screenshot this moment for you and your RK ❤️
+    Screenshot this moment ❤️
   </div>
 </div>
 
@@ -209,19 +224,25 @@ function startQuestion() {
   music.play().catch(() => {});
 }
 
-// Jump No button around GIF + Yes button only
+// No button stays same size and jumps near GIF + Yes
 function moveNoButton() {
   const gifRect = gif.getBoundingClientRect();
   const yesRect = yesBtn.getBoundingClientRect();
-  const padding = 50; // jump area around GIF/Yes
+  const padding = 50;
 
-  const minX = Math.min(gifRect.left, yesRect.left) - padding;
-  const maxX = Math.max(gifRect.right, yesRect.right) + padding - noBtn.offsetWidth;
-  const minY = gifRect.top - padding;
-  const maxY = yesRect.bottom + padding - noBtn.offsetHeight;
+  let minX = Math.min(gifRect.left, yesRect.left) - padding;
+  let maxX = Math.max(gifRect.right, yesRect.right) + padding - noBtn.offsetWidth;
+  let minY = Math.min(gifRect.top, yesRect.top) - padding;
+  let maxY = Math.max(gifRect.bottom, yesRect.bottom) + padding - noBtn.offsetHeight;
 
-  const randomX = Math.max(minX, Math.random() * (maxX - minX));
-  const randomY = Math.max(minY, Math.random() * (maxY - minY));
+  // Clamp to viewport
+  minX = Math.max(0, minX);
+  maxX = Math.min(window.innerWidth - noBtn.offsetWidth, maxX);
+  minY = Math.max(0, minY);
+  maxY = Math.min(window.innerHeight - noBtn.offsetHeight, maxY);
+
+  const randomX = minX + Math.random() * (maxX - minX);
+  const randomY = minY + Math.random() * (maxY - minY);
 
   noBtn.style.left = randomX + "px";
   noBtn.style.top = randomY + "px";
@@ -260,6 +281,20 @@ function launchConfetti() {
     setTimeout(() => confetti.remove(), 5000);
   }
 }
+
+// Falling white hearts like snow
+function createFallingHeart() {
+  const heart = document.createElement("div");
+  heart.className = "falling-heart";
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.fontSize = (12 + Math.random() * 12) + "px";
+  heart.style.opacity = Math.random() * 0.8 + 0.2;
+  heart.textContent = "🤍";
+  heart.style.animationDuration = (10 + Math.random() * 10) + "s";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 20000);
+}
+setInterval(createFallingHeart, 500); // create a heart every 0.5s
 
 // Autoplay fallback
 window.addEventListener("load", () => {
