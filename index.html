@@ -125,7 +125,7 @@ img {
 <body>
 
 <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a8f08c9e2.mp3?filename=romantic-background-112191.mp3" type="audio/mpeg">
+  <source src="https://raw.githubusercontent.com/your-username/your-repo/main/dhun.mp3" type="audio/mpeg">
 </audio>
 
 <!-- LOADING -->
@@ -155,7 +155,7 @@ img {
 <!-- QUESTION -->
 <div id="question" class="screen hidden">
   <h1 id="questionText">Desaiji… Will You Be My Valentine? 🥺</h1>
-  <img id="gif" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif">
+  <img id="gif" src="https://raw.githubusercontent.com/your-username/your-repo/main/first.gif">
   <br>
   <button id="yesBtn" class="primary">❤️ Yes</button>
   <button id="noBtn" class="secondary">No</button>
@@ -210,6 +210,7 @@ const interval = setInterval(() => {
 function startQuestion() {
   intro.classList.add("hidden");
   question.classList.remove("hidden");
+  music.play().catch(() => {}); // triggers music if still blocked
 }
 
 let noScale = 1;
@@ -263,7 +264,7 @@ yesBtn.addEventListener("click", () => {
   document.getElementById("questionText").textContent =
     "SHE SAID YES!!! ❤️😭";
   gif.src =
-    "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif";
+    "https://raw.githubusercontent.com/your-username/your-repo/main/second.gif"; // new GIF
   noBtn.style.display = "none";
   yesBtn.style.display = "none";
 
@@ -289,6 +290,19 @@ function launchConfetti() {
     setTimeout(() => confetti.remove(), 5000);
   }
 }
+
+// Ensure music starts on load even if autoplay is blocked
+window.addEventListener("load", () => {
+  music.play().catch(() => {
+    const userInteraction = () => {
+      music.play().catch(() => {});
+      window.removeEventListener("click", userInteraction);
+      window.removeEventListener("touchstart", userInteraction);
+    };
+    window.addEventListener("click", userInteraction);
+    window.addEventListener("touchstart", userInteraction);
+  });
+});
 </script>
 
 </body>
